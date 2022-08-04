@@ -40,6 +40,7 @@ global{
 		
 		init { 
 			create Place from: place_shapefile with: [type::string(read ("Taille"))] {
+			//write('the place : ', Place);
 		    	
         }
 			
@@ -61,16 +62,16 @@ global{
 		
         
 		
-		create Voiture number: 1{
+		/*create Voiture number: 1{
 			set location <- dest1;
-		} 		
+		} */		
 	}
 	reflex NewCar when: every (tense/intensity){ 
          create Voiture number:1 {
          	location <- dest1;
 	        //location <- any_location_in(one_of(shape1));
-	        //target <- any_location_in(one_of(Place));
-	        but <- "Enter";
+	        target <- any_location_in(one_of(Place));
+	        aim <- "Enter";
             }
          }
 		
@@ -111,17 +112,70 @@ species name: Voiture skills: [moving]{
 	point destination <- {200,500};
 	//point but <- nil;
 	point target <- nil;
+	Place goal <- nil;
+	string aim <- nil;
 	int size init: 3;
-	list neighbour <- list(Place);
+	float speed <- 3.0;
+	int pauseTime <- 800 + rnd(1000);
+	int amount <- 0;
+    int count <- 0;
+    int parkingSize <- 0;
 	
-	reflex goEnter {
-     		do goto target:dest2 on:route1;
-     		if(self.location=target){
-     			//target <- nil;	
+	
+	reflex goEnter when: aim="Enter" and target!=nil {
+		list neighbour <- list(Place) where(each.state="Free");
+		list neighbour1 <- list(Place) where (each.type="large" and each.state="Free");
+		list neighbour2 <- list(Place) where ((each.type="medium" or each.type="large") and each.state="Free");
+		write(neighbour1);
+ 		do goto target:first(neighbour) on:route1;
+ 		if(self.location=target){
+ 			target <- nil;	
+ 		
+ 		}
+ 		
      		
+     }
+     
+  	reflex Park when:goal!=nil and aim="Park"{
+		do goto target:goal on:route1 speed:speed;
+		count <- count+1;
+		if(count > pauseTime){
+			aim <- "sortir";
+			target <- dest2;
+			ask goal {
+				set state <- "Free";
+			}
+			goal <- nil;
+		}
+
+	}
+	
+	reflex Sortir when:target!=nil and aim="sortir"{
+     	do goto target:target on:route1 speed:speed;
+     	if(self.location=target){
+     		target <- nil;
+     		aim <-"partir";
+     		amount <- parkingSize * pauseTime;
+     		if (amount!=0){
+     			target <- any_location_in(one_of(dest2));
      		}
-     		
      	}
+     }
+     
+     reflex Sortir_Parking when:target!=nil and aim="partir"{
+     	do goto target:target speed:speed;
+     	if(self.location=target){
+     		do die;
+     	}
+     }
+     
+     reflex Retour when:target!=nil and aim="retour"{
+     	do goto target:target speed:speed;
+     	if(self.location=target){
+     		do die;
+     	}
+     }
+     	
 	
 	reflex patrolling{
 		//do action: wander amplitude:300;
@@ -174,9 +228,9 @@ experiment Parking type: gui {
 		display tutoriel type: opengl {
 			//species route refresh: false;
 			species batiment;
-			species Voiture aspect: icon;
 			species Route aspect: base;
 			species Place aspect: base;
+			species Voiture aspect: icon;
 			
 			graphics "exit" refresh: false {
 				draw sphere(5) at: dest2 color: #royalblue;
