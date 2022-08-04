@@ -18,6 +18,7 @@ global{
 		file voitureImage <- image_file("../includes/data/voiture_image.png");
 		//file route_shapefile <- file("../includes/lignes.shp");
 		file route1_shapefile <- file("../includes/oneRoad.shp");
+		file route2_shapefile <- file("../includes/ligneRetour.shp");
 		file place_shapefile <- file("../includes/place.shp");
 		
 		geometry shape <- envelope(parkingShapeFile);
@@ -30,6 +31,7 @@ global{
 		int tense <- 500;
 	    int intensity <- 2;
 	    graph route1;
+	    graph route2;
 		
 		geometry espace_libre;
 		
@@ -46,6 +48,8 @@ global{
 			
 		create Route from: route1_shapefile ;
 		route1 <- as_edge_graph(Route);
+		create Route from: route2_shapefile;
+		route2 <- as_edge_graph(Route);
 		
 		espace_libre <- copy(shape);
 		
@@ -116,9 +120,9 @@ species name: Voiture skills: [moving]{
 	point target <- nil;
 	Place goal <- nil;
 	string aim <- nil;
-	int size init: 3;
+	int size init: 15+rnd(5);
 	float speed <- 3.0;
-	int pauseTime <- 800 + rnd(1000);
+	int pauseTime <- 800 + rnd(300);
 	int amount <- 0;
     int count <- 0;
     int parkingSize <- 0;
@@ -157,12 +161,20 @@ species name: Voiture skills: [moving]{
      		
      }
      
+     reflex repartir {
+     	count <- count+1;
+     	write(count);
+		if(count > pauseTime){
+     		do goto target: dest2 on:route2;
+     	}
+     }
+     
   	reflex Garer when:goal!=nil and aim="Garer"{
 		do goto target:goal on:route1 speed:speed;
 		count <- count+1;
 		if(count > pauseTime){
-			aim <- "sortir";
-			target <- dest2;
+			set aim <- "sortir";
+			set target <- dest2;
 			ask goal {
 				set state <- "Free";
 			}
@@ -205,7 +217,7 @@ species name: Voiture skills: [moving]{
 		draw circle(size) color:#pink;
 	}
 	aspect icon {
-		draw voitureImage size: 15 color: rgb(255, 255, 250+rnd(5));
+		draw voitureImage size: size color: rgb(255, 255, 250+rnd(5));
 	}
 	
 	reflex chercherPlace when: (but != nil) {
@@ -249,7 +261,7 @@ experiment Parking type: gui {
 		display tutoriel type: opengl {
 			//species route refresh: false;
 			species batiment;
-			species Route aspect: base;
+			//species Route aspect: base;
 			species Place aspect: base;
 			species Voiture aspect: icon;
 			
