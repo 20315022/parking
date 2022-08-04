@@ -67,10 +67,12 @@ global{
 		} */		
 	}
 	reflex NewCar when: every (tense/intensity){ 
+		
+		list neighbour <- list(Place) where(each.occupe=false);
          create Voiture number:1 {
          	location <- dest1;
 	        //location <- any_location_in(one_of(shape1));
-	        target <- any_location_in(one_of(Place));
+	        target <-first(neighbour);
 	        aim <- "Enter";
             }
          }
@@ -120,23 +122,42 @@ species name: Voiture skills: [moving]{
 	int amount <- 0;
     int count <- 0;
     int parkingSize <- 0;
+ 
 	
 	
 	reflex goEnter when: aim="Enter" and target!=nil {
-		list neighbour <- list(Place) where(each.state="Free");
-		list neighbour1 <- list(Place) where (each.type="large" and each.state="Free");
-		list neighbour2 <- list(Place) where ((each.type="medium" or each.type="large") and each.state="Free");
-		write(neighbour1);
+		list neighbour <- list(Place) where(each.occupe=false);
+		//but <- first(list (Place) where(each.state="Free") sort_by ((self distance_to each) ));
+		//list neighbour1 <- list(Place) where (each.type="large" and each.state="Free");
+		//list neighbour2 <- list(Place) where ((each.type="medium" or each.type="large") and each.state="Free");
+		write(neighbour);
  		do goto target:first(neighbour) on:route1;
  		if(self.location=target){
  			target <- nil;	
- 		
+ 			if(length(neighbour) > 0){
+	            goal <- first(neighbour);
+	            aim <- "Park";
+	            /*if(goal.type="large"){
+	            	parkingSize <- 11;
+	            }else if(goal.type="medium"){
+	            	parkingSize<-10;
+	            }else {
+	            	parkingSize <- 9;
+	            }*/
+	            ask goal {
+		        	set state <- "Taken";
+		        	set occupe <- true;
+	             }
+			    }else {
+	               target <- dest2;
+	               aim <- "retour";
+            	}
  		}
- 		
+
      		
      }
      
-  	reflex Park when:goal!=nil and aim="Park"{
+  	reflex Garer when:goal!=nil and aim="Garer"{
 		do goto target:goal on:route1 speed:speed;
 		count <- count+1;
 		if(count > pauseTime){
@@ -206,7 +227,7 @@ species name: Voiture skills: [moving]{
 species Place  control:fsm{
 	string type; 
 	rgb color <- #gray  ;
-	
+	bool occupe <- false;
 	
 	aspect base {
 		draw shape color: color ;
