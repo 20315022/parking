@@ -102,19 +102,15 @@ species batiment {
 
 species name: Voiture skills: [moving]{
 	
-	/*aspect default {
-		draw shape voitureImage;
-		//draw circle(3.0) color: #yellow;*/
-	//}
 	rgb color init:rgb(rnd(255), rnd(255), 250+rnd(5));
-	int rayonObservation <- 5;
+	//int rayonObservation <- 5;
 	int tailleVoiture <- 10+rnd(10);
 	bool Garer <- false;
 	Place but <- nil;
 	//rgb color init: rgb('black');
-	int dureeStationnement <- 0;
+	//int dureeStationnement <- 0;
 	int prix <- 0;
-	point destination <- {200,500};
+	//point destination <- {200,500};
 	//point but <- nil;
 	point target <- nil;
 	Place goal init: nil;
@@ -124,7 +120,7 @@ species name: Voiture skills: [moving]{
 	int pauseTime <- 800 + rnd(300);
 	int amount <- 0;
     int count <- 0;
-    int parkingSize <- 0;
+    //int parkingSize <- 0;
 	
 	
 	reflex goEnter when: aim="Enter" and target!=nil {
