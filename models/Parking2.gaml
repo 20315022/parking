@@ -19,7 +19,7 @@ global{
 		//file route_shapefile <- file("../includes/lignes.shp");
 		file route1_shapefile <- file("../includes/oneRoad.shp");
 		file route2_shapefile <- file("../includes/ligneRetour.shp");
-		file place_shapefile <- file("../includes/place.shp");
+		file place_shapefile <- file("../includes/ttttt.shp");
 		
 		geometry shape <- envelope(parkingShapeFile);
 		geometry shape1 <- envelope(route1_shapefile);
@@ -42,7 +42,7 @@ global{
 		
 		init { 
 			create Place from: place_shapefile with: [type::string(read ("Taille"))] {
-			//write('the place : ', Place);
+			write('the place : ', Place.type);
 		    	
         }
 			
