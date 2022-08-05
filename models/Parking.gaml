@@ -64,8 +64,6 @@ global{
 		
 		} */
 		
-        
-		
 		/*create Voiture number: 1{
 			set location <- dest1;
 		} */		
@@ -107,12 +105,12 @@ species name: Voiture skills: [moving]{
 		draw shape voitureImage;
 		//draw circle(3.0) color: #yellow;*/
 	//}
-	
+	rgb color init:rgb(rnd(255), rnd(255), 250+rnd(5));
 	int rayonObservation <- 5;
 	float tailleVoiture <- 10.0+rnd(5.0);
 	bool Garer <- false;
 	Place but <- nil;
-	rgb color init: rgb('black');
+	//rgb color init: rgb('black');
 	int dureeStationnement <- 0;
 	int prix <- 0;
 	point destination <- {200,500};
@@ -120,7 +118,7 @@ species name: Voiture skills: [moving]{
 	point target <- nil;
 	Place goal <- nil;
 	string aim <- nil;
-	int size init: 15+rnd(5);
+	int size init: 20+rnd(5);
 	float speed <- 3.0;
 	int pauseTime <- 800 + rnd(300);
 	int amount <- 0;
@@ -166,10 +164,13 @@ species name: Voiture skills: [moving]{
      	write(count);
 		if(count > pauseTime){
      		do goto target: dest2 on:route2;
+     		if(self.location = dest2){
+     			do die;
+     		}
      	}
      }
      
-  	reflex Garer when:goal!=nil and aim="Garer"{
+  	/*reflex Garer when:goal!=nil and aim="Garer"{
 		do goto target:goal on:route1 speed:speed;
 		count <- count+1;
 		if(count > pauseTime){
@@ -207,17 +208,17 @@ species name: Voiture skills: [moving]{
      	if(self.location=target){
      		do die;
      	}
-     }
+     }*/
      	
 	
 	reflex patrolling{
 		//do action: wander amplitude:300;
 	}
 	aspect base {
-		draw circle(size) color:#pink;
+		draw circle(size) color:color;
 	}
 	aspect icon {
-		draw voitureImage size: size color: rgb(255, 255, 250+rnd(5));
+		draw voitureImage size: size color: color;
 	}
 	
 	reflex chercherPlace when: (but != nil) {
