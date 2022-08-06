@@ -6,7 +6,7 @@
 */
 
 
-model Parking
+model Parking2
 
 /* Insert your model definition here */
 
@@ -133,7 +133,7 @@ species name: Voiture skills: [moving]{
 	bool Garer <- false;
 	//rgb color init: rgb('black');
 	//int dureeStationnement <- 0;
-	//int prix <- 0;
+	int prix <- 0;
 	
 	point target <- nil;
 	Place goal init: nil;
@@ -143,15 +143,23 @@ species name: Voiture skills: [moving]{
 	int pauseTime <- 800 + rnd(300);
 	int amount <- 0;
     int count <- 0;
+    
 	
 	//Reflexe qui permet de diriger la voiture vers le point de stationnement adéquat
 	reflex Entrer when: aim="Enter" and target!=nil {
 		
 		list neighbour <- list(Place) where(each.occupe=false and each.type>=self.size) sort_by ((self distance_to each));
-		/* */
-		
-		if(length(neighbour) > 0){
+		loop h from: 0 to: length(neighbour)-1 {
+			
+		 	if(neighbour[h] = false){
+		 		do goto target:neighbour[h] on:route1;
+		 		break;
+		 	}
+			
+		}
+		/*if(length(neighbour) > 0){
 			target <- first(neighbour);
+			
 	 		do goto target:first(neighbour) on:route1;
 	 		goal <- target;
 	 		if(location = target){
@@ -165,7 +173,7 @@ species name: Voiture skills: [moving]{
 		}
 		else{
 			do goto target:dest2 on:route2;
-		}
+		}*/
  		
 	}
      
@@ -240,7 +248,7 @@ species PointDeControl{
 }
 
 
-experiment Parking type: gui {
+experiment Parking2 type: gui {
 	parameter "Intensite" var: intensity  category: "car" ;
 	//float le_cycle <- 0.04; 
 	output {
