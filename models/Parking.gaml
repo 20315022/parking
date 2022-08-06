@@ -21,6 +21,7 @@ global{
 		file route1_shapefile <- file("../includes/oneRoad.shp");
 		file route2_shapefile <- file("../includes/ligneRetour.shp");
 		file place_shapefile <- file("../includes/ttttt.shp");
+		file controlPoint <- image_file("../includes/data/border1.png");
 		
 		geometry shape <- envelope(parkingShapeFile);
 		geometry shape1 <- envelope(route1_shapefile);
@@ -44,7 +45,7 @@ global{
 		int nb_voiture <- 20;
 		point dest1 <-{10,0};
 		
-		point dest2 <-{35,0};
+		point dest2 <-{35,-10};
 		
 		init { 
 			create Route from: route1_shapefile ;
@@ -174,6 +175,8 @@ species name: Voiture skills: [moving]{
  			ask goal{
  				set occupe <- false;
  			}
+ 			list neighbour <- list(Place) where (each.occupe=false);
+     		availablePlace <- length(neighbour);
      		
      		if(self.location = dest2){
      			do die;
@@ -213,11 +216,15 @@ species Place {
 species PointDeControl{
 	point location init: dest2;
 	
-	rgb color <- #slateblue  ;
-	int size <- 5;
+	//rgb color <- #slateblue  ;
+	int size <- 30;
 	
 	aspect base {
 		draw circle(size) color: color;
+	}
+	
+	aspect icon {
+		draw controlPoint size: size color: color;
 	}
 	
 }
@@ -230,10 +237,10 @@ experiment Parking type: gui {
 		display tutoriel type: opengl {
 			//species route refresh: false;
 			species batiment;
-			species Route aspect: base;
+			//pecies Route aspect: base;
 			species Place aspect: base;
 			species Voiture aspect: icon;
-			species PointDeControl aspect:base;
+			species PointDeControl aspect:icon;
 			
 			graphics "exit" refresh: false {
 				//draw sphere(5) at: dest2 color: #royalblue;
